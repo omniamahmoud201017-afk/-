@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحدي الاختبارات: إلكتروني أم ورقي؟</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts: Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-gradient-blue {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-gradient-blue:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-gradient-amber {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-gradient-amber:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(245, 158, 11, 0.4);
+        }
+
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-hover:hover {
+            transform: translateY(-5px) scale(1.02);
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .animate-glow {
+            animation: pulseGlow 3s infinite ease-in-out;
+        }
+
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen justify-between pb-6">
+
+    <!-- Header / Navigation -->
+    <header class="w-full border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                    <i class="fa-solid fa-graduation-cap text-xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold bg-gradient-to-r from-blue-400 via-indigo-300 to-amber-400 bg-clip-text text-transparent">
+                        تحدي الاختبارات التعليمية
+                    </h1>
+                    <p class="text-xs text-slate-400">إلكتروني أم ورقي؟ اكتشف الأفضل واستمتع بالتحدي!</p>
+                </div>
+            </div>
+
+            <!-- Mode Switch Tabs -->
+            <div class="flex bg-slate-800/90 p-1.5 rounded-xl border border-slate-700/60">
+                <button id="tab-game" onclick="switchMode('game')" class="px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 text-white bg-indigo-600 shadow-md">
+                    <i class="fa-solid fa-gamepad text-amber-300"></i>
+                    <span>لعبة السيناريوهات</span>
+                </button>
+                <button id="tab-compare" onclick="switchMode('compare')" class="px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-code-compare text-blue-400"></i>
+                    <span>مصفوفة المقارنة</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-5xl mx-auto px-4 py-8 w-full flex-grow flex flex-col justify-center">
+
+        <!-- ================= MODE 1: QUIZ GAME ================= -->
+        <section id="mode-game" class="w-full">
+            
+            <!-- Welcome Screen -->
+            <div id="game-start" class="glass-card rounded-3xl p-8 text-center max-w-2xl mx-auto">
+                <div class="w-20 h-20 bg-indigo-500/10 border border-indigo-500/30 rounded-full flex items-center justify-center mx-auto mb-6 text-indigo-400 text-3xl animate-glow">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+                <h2 class="text-3xl font-extrabold mb-4 text-white">تحدي اتخاذ القرار التربوي</h2>
+                <p class="text-slate-300 mb-6 leading-relaxed">
+                    ستُعرض عليك مواقف وسيناريوهات تعليمية واقعية. طَبّق مهاراتك ورؤيتك لتحديد الخيار الأمثل لكل موضع: 
+                    <span class="text-blue-400 font-bold">الاختبار الإلكتروني</span> أم <span class="text-amber-400 font-bold">الاختبار الورقي</span>؟
+                </p>
+                
+                <!-- Student Name Input Form -->
+                <div class="max-w-md mx-auto mb-6 text-right">
+                    <label for="student-name-input" class="block text-sm font-semibold text-slate-300 mb-2">
+                        <i class="fa-solid fa-user-pen text-indigo-400 me-1"></i> أعدَدنا لك شهادة إنجاز، يُرجى كتابة اسمك:
+                    </label>
+                    <input type="text" id="student-name-input" placeholder="اكتب اسمك الثلاثي هنا..." class="w-full bg-slate-900/90 border border-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40 rounded-xl px-4 py-3 text-white placeholder-slate-500 outline-none transition-all text-sm font-semibold">
+                    <p id="name-error" class="hidden text-rose-400 text-xs mt-1 font-semibold">برجاء كتابة اسمك أولاً لبدء التحدي.</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mb-8 text-right max-w-md mx-auto text-sm text-slate-400">
+                    <div class="flex items-center gap-2 bg-slate-800/50 p-3 rounded-lg border border-slate-700/50">
+                        <i class="fa-solid fa-bullseye text-indigo-400"></i>
+                        <span>10 سيناريوهات واقعية</span>
+                    </div>
+                    <div class="flex items-center gap-2 bg-slate-800/50 p-3 rounded-lg border border-slate-700/50">
+                        <i class="fa-solid fa-award text-amber-400"></i>
+                        <span>شهادة إنجاز مخصصة</span>
+                    </div>
+                </div>
+
+                <button onclick="validateAndStartGame()" class="btn-gradient-blue text-white px-8 py-3.5 rounded-xl font-bold text-lg w-full sm:w-auto shadow-lg shadow-blue-500/20">
+                    <i class="fa-solid fa-play me-2"></i> اَبدأ التحدي الآن
+                </button>
+            </div>
+
+            <!-- Active Quiz Screen -->
+            <div id="game-quiz" class="hidden glass-card rounded-3xl p-6 md:p-8 max-w-3xl mx-auto">
+                <!-- Top Status Bar -->
+                <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-700/60 text-sm">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-indigo-600/30 text-indigo-300 px-3 py-1 rounded-lg border border-indigo-500/30 font-bold flex items-center gap-2">
+                            <i class="fa-solid fa-user text-xs"></i>
+                            <span id="player-greeting-name">الطالب</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-xs">
+                            <span class="text-slate-400">السؤال:</span>
+                            <span id="current-question-num" class="font-bold text-indigo-400 text-base">1</span>
+                            <span class="text-slate-500">/</span>
+                            <span id="total-questions-num" class="text-slate-400">10</span>
+                        </div>
+                    </div>
+                    <!-- Progress Bar -->
+                    <div class="w-1/4 hidden sm:block bg-slate-800 rounded-full h-3 overflow-hidden border border-slate-700">
+                        <div id="progress-bar" class="bg-gradient-to-r from-blue-500 to-indigo-500 h-full w-0 transition-all duration-500"></div>
+                    </div>
+                    <!-- Score -->
+                    <div class="flex items-center gap-2 bg-indigo-950/60 px-3 py-1.5 rounded-lg border border-indigo-500/30">
+                        <i class="fa-solid fa-star text-amber-400"></i>
+                        <span class="text-slate-300 text-xs sm:text-sm">النقاط:</span>
+                        <span id="score-display" class="font-bold text-amber-400 text-lg">0</span>
+                    </div>
+                </div>
+
+                <!-- Question Card -->
+                <div class="mb-8">
+                    <div class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 mb-3" id="question-category">
+                        سياق الاختبار
+                    </div>
+                    <h3 id="question-title" class="text-xl md:text-2xl font-bold text-white mb-3 leading-snug">
+                        عنوان الموقف التعليمي...
+                    </h3>
+                    <p id="question-desc" class="text-slate-300 text-base leading-relaxed bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+                        تفاصيل السيناريو والظروف المحيطة بالإمتحان...
+                    </p>
+                </div>
+
+                <!-- Choice Buttons -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                    <button id="btn-elec" onclick="submitAnswer('electronic')" class="card-hover bg-slate-800/80 hover:bg-slate-800 border-2 border-blue-500/30 hover:border-blue-500 p-5 rounded-2xl flex items-center gap-4 text-right transition-all group">
+                        <div class="w-12 h-12 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-xl shrink-0 group-hover:bg-blue-500 group-hover:text-white transition-all">
+                            <i class="fa-solid fa-laptop-code"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-white text-lg">اختبار إلكتروني</div>
+                            <div class="text-xs text-slate-400">عبر الأجهزة الرقمية والشبكات</div>
+                        </div>
+                    </button>
+
+                    <button id="btn-paper" onclick="submitAnswer('paper')" class="card-hover bg-slate-800/80 hover:bg-slate-800 border-2 border-amber-500/30 hover:border-amber-500 p-5 rounded-2xl flex items-center gap-4 text-right transition-all group">
+                        <div class="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl shrink-0 group-hover:bg-amber-500 group-hover:text-white transition-all">
+                            <i class="fa-solid fa-file-pen"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-white text-lg">اختبار ورقي</div>
+                            <div class="text-xs text-slate-400">بالطريقة التقليدية المطبوعة</div>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Feedback Section -->
+                <div id="feedback-box" class="hidden p-5 rounded-2xl border transition-all mb-6">
+                    <div class="flex items-start gap-3 mb-2">
+                        <i id="feedback-icon" class="text-2xl mt-0.5"></i>
+                        <div>
+                            <h4 id="feedback-title" class="font-bold text-lg"></h4>
+                            <p id="feedback-text" class="text-sm mt-1 leading-relaxed opacity-90"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Next Button -->
+                <button id="btn-next" onclick="nextQuestion()" class="hidden btn-gradient-blue w-full py-3.5 rounded-xl font-bold text-white text-center shadow-lg">
+                    <span>السؤال التالي</span>
+                    <i class="fa-solid fa-arrow-left me-2"></i>
+                </button>
+            </div>
+
+            <!-- Result Screen & Certificate -->
+            <div id="game-result" class="hidden glass-card rounded-3xl p-6 md:p-8 text-center max-w-2xl mx-auto">
+                <div id="result-badge" class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl shadow-xl">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-black mb-1 text-white">انتهى التحدي بنجاح!</h2>
+                <p id="result-subtitle" class="text-slate-400 mb-6 text-sm">تم تقييم نتائجك وإصدار الشهادة التالية باسمك</p>
+
+                <!-- Printable Certificate Card -->
+                <div id="certificate-card" class="bg-slate-900 border-4 border-amber-500/50 p-6 md:p-8 rounded-2xl shadow-2xl text-right relative overflow-hidden mb-6">
+                    <div class="absolute -top-12 -left-12 w-32 h-32 bg-amber-500/10 rounded-full blur-xl pointer-events-none"></div>
+                    <div class="flex justify-between items-start mb-6 border-b border-slate-800 pb-4">
+                        <div>
+                            <span class="text-xs text-amber-400 font-bold uppercase tracking-wider block mb-1">شهادة إنجاز وتفوق</span>
+                            <h3 class="text-xl md:text-2xl font-black text-white">تحدي الاختبارات الإلكترونية والورقية</h3>
+                        </div>
+                        <div class="w-12 h-12 bg-amber-500/20 text-amber-400 rounded-xl flex items-center justify-center text-xl shrink-0 border border-amber-500/40">
+                            <i class="fa-solid fa-certificate"></i>
+                        </div>
+                    </div>
+
+                    <p class="text-slate-300 text-sm leading-relaxed mb-4">
+                        تشهد إدارة التقييم والتحول الرقمي بأن الطالب/ة:
+                    </p>
+                    <div class="text-2xl md:text-3xl font-extrabold text-amber-400 bg-slate-950/80 py-3 px-4 rounded-xl border border-slate-800 mb-6 text-center tracking-wide" id="cert-student-name">
+                        اسم الطالب
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="bg-slate-950/60 p-3 rounded-xl border border-slate-800 text-center">
+                            <div class="text-xs text-slate-400 mb-1">النتيجة الإجمالية</div>
+                            <div class="text-2xl font-black text-indigo-400" id="cert-final-score">0 / 100</div>
+                        </div>
+                        <div class="bg-slate-950/60 p-3 rounded-xl border border-slate-800 text-center">
+                            <div class="text-xs text-slate-400 mb-1">التقييم التربوي</div>
+                            <div class="text-sm font-bold text-emerald-400 mt-1" id="cert-rating">ممتاز</div>
+                        </div>
+                    </div>
+
+                    <p id="result-feedback-text" class="text-xs md:text-sm text-slate-300 leading-relaxed bg-slate-800/40 p-3.5 rounded-xl border border-slate-800/80 mb-4"></p>
+
+                    <div class="flex justify-between items-center text-xs text-slate-500 pt-2 border-t border-slate-800">
+                        <span>التاريخ: <span id="cert-date"></span></span>
+                        <span>رمز التوثيق: #<span id="cert-id"></span></span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                    <button onclick="printCertificate()" class="btn-gradient-amber px-6 py-3 rounded-xl font-bold text-slate-950 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-print"></i> طباعة / حفظ الشهادة
+                    </button>
+                    <button onclick="startGame()" class="btn-gradient-blue px-6 py-3 rounded-xl font-bold text-white flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-rotate-right"></i> إعادة التحدي
+                    </button>
+                    <button onclick="switchMode('compare')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-5 py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all">
+                        <i class="fa-solid fa-sliders"></i> مصفوفة المقارنة
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- ================= MODE 2: COMPARISON MATRIX ================= -->
+        <section id="mode-compare" class="hidden w-full">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl md:text-3xl font-extrabold text-white mb-2">مصفوفة المقارنة المباشرة</h2>
+                <p class="text-slate-400 text-sm max-w-2xl mx-auto">اختر المعيار التعليمي لاستكشاف الفروق الدقيقة والإيجابيات والسلبيات بين النمطين بشكل مفصل.</p>
+            </div>
+
+            <!-- Categories Selector Buttons -->
+            <div class="flex flex-wrap gap-2 justify-center mb-8" id="criteria-selector">
+                <!-- Javascript will populate criteria buttons here -->
+            </div>
+
+            <!-- Side-by-Side Cards Comparison -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <!-- Electronic Exam Card -->
+                <div class="glass-card rounded-2xl p-6 border-t-4 border-t-blue-500 relative overflow-hidden">
+                    <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-700/60">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-laptop"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-xl text-white">الاختبار الإلكتروني</h3>
+                                <span class="text-xs text-blue-400">التقويم الرقمي والتفاعلي</span>
+                            </div>
+                        </div>
+                        <span class="text-xs font-semibold bg-blue-500/10 text-blue-400 px-2.5 py-1 rounded-full border border-blue-500/20" id="compare-criterion-tag-1">المعيار المSelected</span>
+                    </div>
+
+                    <div id="elec-detail-content" class="space-y-4">
+                        <!-- Content via JS -->
+                    </div>
+                </div>
+
+                <!-- Paper Exam Card -->
+                <div class="glass-card rounded-2xl p-6 border-t-4 border-t-amber-500 relative overflow-hidden">
+                    <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-700/60">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-scroll"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-xl text-white">الاختبار الورقي</h3>
+                                <span class="text-xs text-amber-400">التقويم المكتوب التقليدي</span>
+                            </div>
+                        </div>
+                        <span class="text-xs font-semibold bg-amber-500/10 text-amber-400 px-2.5 py-1 rounded-full border border-amber-500/20" id="compare-criterion-tag-2">المعيار المSelected</span>
+                    </div>
+
+                    <div id="paper-detail-content" class="space-y-4">
+                        <!-- Content via JS -->
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Summary Table Section -->
+            <div class="mt-12 glass-card rounded-2xl p-6 overflow-x-auto">
+                <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-table-list text-indigo-400"></i> جدول ملخص التقييم السريع
+                </h3>
+                <table class="w-full text-right text-sm text-slate-300">
+                    <thead class="bg-slate-900/80 text-slate-400 text-xs border-b border-slate-700">
+                        <tr>
+                            <th class="p-3">وجه المقارنة</th>
+                            <th class="p-3 text-blue-400">الاختبار الإلكتروني</th>
+                            <th class="p-3 text-amber-400">الاختبار الورقي</th>
+                            <th class="p-3">الأفضل لـ...</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800" id="summary-table-body">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="max-w-5xl mx-auto px-4 text-center text-xs text-slate-500 py-4 border-t border-slate-800/80 w-full">
+        مصمم للأغراض التعليمية والتطبيقية والتوعية بأساليب التقييم المتقدمة. 
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        /* ================= GAME DATA (SCENARIOS) ================= */
+        const scenarios = [
+            {
+                id: 1,
+                category: "السرعة والأعداد الكبيرة",
+                title: "اختبار قبول لـ 5,000 طالب مع إعلان النتائج فوراً",
+                description: "تعتزم الجامعة إجراء اختبار قبول عام يتطلب إظهار نتائج جميع الطلاب المتقدمين مباشرة بعد إنهاء الاختبار بساعات قليلة لتحديد المقبولين.",
+                bestChoice: "electronic",
+                explanation: "الاختبار الإلكتروني يتيح التصحيح الآلي الفوري بمجرد النقر على زر إنهاء الاختبار، وهو أمر يستحيل تحقيقه ورقياً مع 5,000 طالب خلال ساعات.",
+                scoreWeight: 10
+            },
+            {
+                id: 2,
+                category: "البنية التحتية والظروف",
+                title: "مدرسة في منطقة نائية تعاني من انقطاع دائم للكهرباء والإنترنت",
+                description: "مدرسة ريفية ترغب في إجراء اختبارات نهاية الفصل الدراسي الأول، ولا توفر المنطقة شبكة إنترنت ثابتة وتمر بظروف انقطاع طاقة متكررة.",
+                bestChoice: "paper",
+                explanation: "في غياب الكهرباء والإنترنت، يصبح الاختبار الورقي الخيار الأضمن والأكثر اعتمادية لضمان سير العملية الامتحانية دون تعطل تقني.",
+                scoreWeight: 10
+            },
+            {
+                id: 3,
+                category: "تنوع الأسئلة والوسائط",
+                title: "اختبار استماع وفهم في اللغة الإنجليزية مع مقاطع فيديو تفاعلية",
+                description: "معلم لغات يرغب في تقييم مهارات الاستماع والمحادثة لدى الطلاب من خلال استعراض مقاطع فيديو قصيرة والإجابة على أسئلة حولها.",
+                bestChoice: "electronic",
+                explanation: "تتيح المنصات الرقمية دمج الصوتيات والفيديوهات والرسوم التفاعلية بسلاسة لكل طالب على حدة بدقة عالية ومعدات فردية.",
+                scoreWeight: 10
+            },
+            {
+                id: 4,
+                category: "المهارات اليدوية والهندسية",
+                title: "اختبار رياضيات يتطلب رسم خطوات معادلات وشبكات هندسية مفصلة",
+                description: "اختبار في الهندسة الفضائية والرياضيات المتقدمة يتطلب من الطلاب كتابة خطوات إثبات معقدة ورسم أشكال هندسية بأدوات الرسم.",
+                bestChoice: "paper",
+                explanation: "على الرغم من وجود برامج رسم رقمية، إلا أن الرسم اليدوي والتعبير الحسابي المكتوب بخط اليد يظلان أسهل وأكثر طبيعية للطلاب في الورقي.",
+                scoreWeight: 10
+            },
+            {
+                id: 5,
+                category: "الاستدامة والبيئة",
+                title: "مؤسسة تسعى لشعار 'مؤسسة خضراء بلا أوراق' وتقليل التكاليف التشغيلية",
+                description: "إدارة تعليمية تُجري سنوياً أكثر من 200,000 اختبار وتسعى لخفض استهلاك الحبر والأوراق وتكاليف الطباعة والنقل.",
+                bestChoice: "electronic",
+                explanation: "الاختبارات الإلكترونية تلغي تماماً الحاجة لطباعة أطنان من الأوراق وشحنها وتخزينها، مما يحقق استدامة بيئية وتوفيراً مالياً كبيراً.",
+                scoreWeight: 10
+            },
+            {
+                id: 6,
+                category: "النزاهة والتسريب",
+                title: "الحد من مخاطر تسريب أوراق الأسئلة قبل موعد الاختبار بنسخ متعددة",
+                description: "وزارة التربية تريد إرسال أسئلة الامتحانات العامة لمئات المراكز دون الخوف من فتح الطرود المطبوعة أو تسريبها قبل الدقيقة الأولى.",
+                bestChoice: "electronic",
+                explanation: "الاختبارات الرقمية تمكن من تشفير الأسئلة وإرسالها في نفس لحظة بدء الامتحان، مع توليد نماذج أسئلة مخصصة وعشوائية لكل طالب.",
+                scoreWeight: 10
+            },
+            {
+                id: 7,
+                category: "السرعة في الإعداد السريع",
+                title: "اختبار مفاجئ وقصير (Pop Quiz) لمدة 5 دقائق داخل الفصل",
+                description: "معلم يريد التأكد في منتصف الحصة الدراسية من فهم الطلاب لمفهوم سريع تم شرحه للتو دون إهدار وقت التجهيزات.",
+                bestChoice: "electronic",
+                explanation: "عبر الجوال أو الأجهزة الذكية المتوفرة بالصف، يمكن للمعلم إرسال سؤال سريع عبر نظام استجابة رمزي أو نموذج إلكتروني يستغرق إعداده دقيقة واحدة.",
+                scoreWeight: 10
+            },
+            {
+                id: 8,
+                category: "التعبير المقالي الحر",
+                title: "مسابقة كتابة مقالية أدبية ممتدة بخط اليد والتعبير الفني",
+                description: "امتحان يستهدف تقييم جماليات الخط العربي، والتعبير الكتابي الطويل في الأدب واللغة العربية دون استعانة بالمدقق الإملائي التلقائي.",
+                bestChoice: "paper",
+                explanation: "الاختبار الورقي يمنح المساحة الكاملة لتذوق الخط اليدوي وتفادي المساعدة الآلية للمدققات الإملائية والنصوص التنبؤية.",
+                scoreWeight: 10
+            },
+            {
+                id: 9,
+                category: "ذوو الاحتياجات الخاصة",
+                title: "اختبار طلاب من ذوي الإعاقة البصرية أو صعوبات القراءة (الدسلكسيا)",
+                description: "مؤسسة ترغب في تقديم تقييم عادل لطلاب يحتاجون إلى مكبرات خطوط، وقارئات شاشة صوتية، وألوان تباين خاضعة للتعديل الشخصي.",
+                bestChoice: "electronic",
+                explanation: "المنصات الإلكترونية توفر تقنيات سهولة الوصول (Accessibility) مثل تكبير الخطوط، القراءة الصوتية للأسئلة، وتغيير التباين فورياً.",
+                scoreWeight: 10
+            },
+            {
+                id: 10,
+                category: "التحليلات والبيانات",
+                title: "استخراج تحليل إحصائي لمستوى صعوبة كل سؤال في الامتحان",
+                description: "فريق تطوير المناهج يحتاج لمعرفة الأسئلة الشديدة الصعوبة أو التمييزية، ونسبة الإجابات الخاطئة لكل خيار بالتفصيل.",
+                bestChoice: "electronic",
+                explanation: "أنظمة التقييم الرقمية تقدم لوحات تحليلات إحصائية فورية (Item Analysis) دون الحاجة لإدخال وتجميع البيانات يدوياً.",
+                scoreWeight: 10
+            }
+        ];
+
+        /* ================= COMPARISON MATRIX DATA ================= */
+        const criteriaData = [
+            {
+                id: "cost",
+                name: "التكلفة والموارد",
+                icon: "fa-coins",
+                electronic: {
+                    title: "تكلفة تأسيسية عالية وتوفير مستدام",
+                    points: [
+                        "تتطلب بنية تحتية (أجهزة، شبكات، خوادم) في البداية.",
+                        "تعد معدومة التكلفة الاستهلاكية (لا طباعة ولا أوراق).",
+                        "توفير كبير في أجور لجان التصحيح والنقل والتخزين على المدى الطويل."
+                    ],
+                    badge: "ممتاز للمدى البعيد"
+                },
+                paper: {
+                    title: "تكلفة تأسيسية منخفضة وتكاليف تكرارية مستمرة",
+                    points: [
+                        "لا تتطلب أجهزة ذكية أو شبكات إنترنت.",
+                        "تكاليف مستمرة ومجتمعة للطباعة، الحبر، وشراء الورق سنوياً.",
+                        "تكاليف إضافية لنقل الأوراق بشكل آمن وحفظها في مستودعات."
+                    ],
+                    badge: "اقتصادي في البداية"
+                },
+                best: "إلكتروني (في المؤسسات الكبيرة والمستدامة)"
+            },
+            {
+                id: "speed",
+                name: "سرعة التصحيح والنتائج",
+                icon: "fa-bolt",
+                electronic: {
+                    title: "تصحيح فوري ولحظي",
+                    points: [
+                        "تصحيح تلقائي فور إنهاء الطالب للاختبار للأسئلة الموضوعية.",
+                        "إعلان النتائج لآلاف الطلاب في ثوانٍ معدودة.",
+                        "توفير جهد المعلم ليتفرغ للتطوير والتغذية الراجعة."
+                    ],
+                    badge: "فوري ومباشر"
+                },
+                paper: {
+                    title: "تصحيح يدوّي يتطلب وقتاً وجهداً",
+                    points: [
+                        "يستغرق أياماً أو أسابيع لتصحيح ورصد الدرجات.",
+                        "عرضة للخطأ البشري أثناء إدخال وجامع الدرجات.",
+                        "يتطلب فرز وتوزيع الأوراق على المصححين."
+                    ],
+                    badge: "بطيء نسبياً"
+                },
+                best: "إلكتروني بلا منازع"
+            },
+            {
+                id: "security",
+                name: "الأمان ومكافحة الغش",
+                icon: "fa-shield-halved",
+                electronic: {
+                    title: "تشفير عالي مع مخاطر تقنية",
+                    points: [
+                        "نماذج عشوائية وترتيب أسئلة متغير لكل طالب.",
+                        "إمكانية إغلاق المتصفح (Lockdown Browser) والرقابة بالذكاء الاصطناعي.",
+                        "خطر الاختراق أو الاختلال التقني للأنظمة."
+                    ],
+                    badge: "تشفير متقدم"
+                },
+                paper: {
+                    title: "رقابة مباشرة وخطر تسريب مادي",
+                    points: [
+                        "سهولة المراقبة البصرية المباشرة داخل قاعة الاختبار.",
+                        "خطر تسريب الأسئلة المطبوعة قبل موعد الامتحان أثناء النقل.",
+                        "تلف الأوراق أو فقدانها يسبب أزمة تنظيمية."
+                    ],
+                    badge: "رقابة تقليدية"
+                },
+                best: "تعادل (حسب قوة النظام المطبق)"
+            },
+            {
+                id: "questions",
+                name: "تنوع الأسئلة والتفاعلية",
+                icon: "fa-cubes",
+                electronic: {
+                    title: "وسائط متعددة وتفاعلية غنية",
+                    points: [
+                        "دعم مقاطع الصوت والفيديو، المحاكاة، والرسوم التفاعلية.",
+                        "أسئلة السحب والإفلات والتوصيل الرقمي.",
+                        "اختبارات تكيُّفية (تتغير صعوبتها حسب مستوى الطالب)."
+                    ],
+                    badge: "تفاعلي متطور"
+                },
+                paper: {
+                    title: "ثابت ومحدود في نصوص وصور مطبوعة",
+                    points: [
+                        "اقتصار الأسئلة على النصوص والصور الأحادية الثابتة.",
+                        "مثالي للأسئلة المقالية الطويلة المكتوبة والرسومات اليدوية.",
+                        "صعوبة تقديم وسائط سمعية أو تفاعلية فردية."
+                    ],
+                    badge: "تقليدي ثابت"
+                },
+                best: "إلكتروني"
+            },
+            {
+                id: "environment",
+                name: "الأثر البيئي والاستدامة",
+                icon: "fa-leaf",
+                electronic: {
+                    title: "صديق للبيئة (Zero Paper)",
+                    points: [
+                        "عدم استهلاك الأشجار أو الورق والأحبار.",
+                        "تقليل الانبعاثات الناتجة عن شحن ونقل المواد الورقية.",
+                        "استهلاك طاقة كهربائية تشغيلية فقط."
+                    ],
+                    badge: "صديق للبيئة"
+                },
+                paper: {
+                    title: "بصمة كربونية واستعمال كبير للأوراق",
+                    points: [
+                        "قطع ملايين الأشجار سنوياً لصناعة الورق الامتحاني.",
+                        "نفايات ورقية ضخمة بعد انتهاء فترة حفظ الاختبارات.",
+                        "استهلاك المواد الكيميائية والأحبار الملوثة."
+                    ],
+                    badge: "أثر بيئي مرتفع"
+                },
+                best: "إلكتروني"
+            },
+            {
+                id: "reliability",
+                name: "الاعتمادية والظروف الطارئة",
+                icon: "fa-wifi",
+                electronic: {
+                    title: "حساس للبنية التحتية والشبكة",
+                    points: [
+                        "يتأثر بانقطاع الإنترنت، ضعف الشبكة، أو أعطال السيرفر.",
+                        "يتطلب وجود مصدر طاقة كهربائية مستمر.",
+                        "يحتاج دعم فني متواجد لمواجهة مشاكل الأجهزة."
+                    ],
+                    badge: "يتطلب استقرار تقني"
+                },
+                paper: {
+                    title: "يعمل في كل الظروف دون تقنية",
+                    points: [
+                        "لا يتأثر بانقطاع التيار الكهربائي أو الإنترنت.",
+                        "يمكن إجراؤه في أي مكان وقاعة تدريسية بسيطة.",
+                        "اعتمادية عالية جداً في المناطق النائية والظروف الصعبة."
+                    ],
+                    badge: "اعتمادية كاملة"
+                },
+                best: "ورقي (في البيئات غير المستقرة تقنياً)"
+            }
+        ];
+
+        /* ================= GAME STATE ================= */
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedAnswer = null;
+        let studentName = "";
+
+        /* ================= APP INITIALIZATION ================= */
+        window.onload = function() {
+            initComparisonMatrix();
+        };
+
+        function validateAndStartGame() {
+            const nameInput = document.getElementById('student-name-input');
+            const nameError = document.getElementById('name-error');
+            const val = nameInput.value.trim();
+
+            if (!val) {
+                nameError.classList.remove('hidden');
+                nameInput.focus();
+                return;
+            }
+
+            nameError.classList.add('hidden');
+            studentName = val;
+            startGame();
+        }
+
+        function switchMode(mode) {
+            const btnGame = document.getElementById('tab-game');
+            const btnCompare = document.getElementById('tab-compare');
+            const secGame = document.getElementById('mode-game');
+            const secCompare = document.getElementById('mode-compare');
+
+            if (mode === 'game') {
+                secGame.classList.remove('hidden');
+                secCompare.classList.add('hidden');
+                
+                btnGame.className = "px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 text-white bg-indigo-600 shadow-md";
+                btnCompare.className = "px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 text-slate-400 hover:text-white";
+            } else {
+                secGame.classList.add('hidden');
+                secCompare.classList.remove('hidden');
+
+                btnCompare.className = "px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 text-white bg-indigo-600 shadow-md";
+                btnGame.className = "px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 text-slate-400 hover:text-white";
+            }
+        }
+
+        /* ================= QUIZ GAME FUNCTIONS ================= */
+        function startGame() {
+            currentQuestionIndex = 0;
+            score = 0;
+            
+            document.getElementById('game-start').classList.add('hidden');
+            document.getElementById('game-result').classList.add('hidden');
+            document.getElementById('game-quiz').classList.remove('hidden');
+
+            document.getElementById('player-greeting-name').innerText = studentName || "الطالب";
+            document.getElementById('total-questions-num').innerText = scenarios.length;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            selectedAnswer = null;
+            const q = scenarios[currentQuestionIndex];
+
+            // Reset UI
+            document.getElementById('current-question-num').innerText = currentQuestionIndex + 1;
+            document.getElementById('score-display').innerText = score;
+            document.getElementById('question-category').innerText = q.category;
+            document.getElementById('question-title').innerText = q.title;
+            document.getElementById('question-desc').innerText = q.description;
+
+            // Progress bar
+            const progressPercent = ((currentQuestionIndex) / scenarios.length) * 100;
+            document.getElementById('progress-bar').style.width = progressPercent + '%';
+
+            // Buttons reset
+            const btnElec = document.getElementById('btn-elec');
+            const btnPaper = document.getElementById('btn-paper');
+            
+            btnElec.disabled = false;
+            btnPaper.disabled = false;
+
+            btnElec.className = "card-hover bg-slate-800/80 hover:bg-slate-800 border-2 border-blue-500/30 hover:border-blue-500 p-5 rounded-2xl flex items-center gap-4 text-right transition-all group cursor-pointer";
+            btnPaper.className = "card-hover bg-slate-800/80 hover:bg-slate-800 border-2 border-amber-500/30 hover:border-amber-500 p-5 rounded-2xl flex items-center gap-4 text-right transition-all group cursor-pointer";
+
+            // Hide feedback and next button
+            document.getElementById('feedback-box').classList.add('hidden');
+            document.getElementById('btn-next').classList.add('hidden');
+        }
+
+        function submitAnswer(choice) {
+            if (selectedAnswer !== null) return; // Prevent double clicking
+            selectedAnswer = choice;
+
+            const q = scenarios[currentQuestionIndex];
+            const isCorrect = (choice === q.bestChoice);
+
+            const btnElec = document.getElementById('btn-elec');
+            const btnPaper = document.getElementById('btn-paper');
+
+            btnElec.disabled = true;
+            btnPaper.disabled = true;
+            btnElec.classList.remove('card-hover');
+            btnPaper.classList.remove('card-hover');
+
+            if (isCorrect) {
+                score += q.scoreWeight;
+                document.getElementById('score-display').innerText = score;
+            }
+
+            // Highlight chosen button and correct answer
+            if (choice === 'electronic') {
+                btnElec.className = isCorrect 
+                    ? "bg-emerald-950/80 border-2 border-emerald-500 p-5 rounded-2xl flex items-center gap-4 text-right"
+                    : "bg-rose-950/80 border-2 border-rose-500 p-5 rounded-2xl flex items-center gap-4 text-right";
+            } else {
+                btnPaper.className = isCorrect 
+                    ? "bg-emerald-950/80 border-2 border-emerald-500 p-5 rounded-2xl flex items-center gap-4 text-right"
+                    : "bg-rose-950/80 border-2 border-rose-500 p-5 rounded-2xl flex items-center gap-4 text-right";
+            }
+
+            // Also highlight correct answer if wrong choice was made
+            if (!isCorrect) {
+                if (q.bestChoice === 'electronic') {
+                    btnElec.className = "bg-slate-800/50 border-2 border-emerald-500/60 p-5 rounded-2xl flex items-center gap-4 text-right opacity-80";
+                } else {
+                    btnPaper.className = "bg-slate-800/50 border-2 border-emerald-500/60 p-5 rounded-2xl flex items-center gap-4 text-right opacity-80";
+                }
+            }
+
+            // Display Feedback Box with Student Name
+            const feedbackBox = document.getElementById('feedback-box');
+            const feedbackIcon = document.getElementById('feedback-icon');
+            const feedbackTitle = document.getElementById('feedback-title');
+            const feedbackText = document.getElementById('feedback-text');
+
+            feedbackBox.classList.remove('hidden');
+
+            if (isCorrect) {
+                feedbackBox.className = "p-5 rounded-2xl border transition-all mb-6 bg-emerald-950/60 border-emerald-500/50 text-emerald-200";
+                feedbackIcon.className = "fa-solid fa-circle-check text-2xl text-emerald-400 mt-0.5";
+                feedbackTitle.innerText = `أحسنت يا ${studentName}! اختيارك موفق دائمًا.`;
+            } else {
+                feedbackBox.className = "p-5 rounded-2xl border transition-all mb-6 bg-rose-950/60 border-rose-500/50 text-rose-200";
+                feedbackIcon.className = "fa-solid fa-circle-xmark text-2xl text-rose-400 mt-0.5";
+                feedbackTitle.innerText = `حاول مجدداً يا ${studentName} في السؤال التالي!`;
+            }
+
+            feedbackText.innerText = q.explanation;
+
+            // Show Next Button
+            document.getElementById('btn-next').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < scenarios.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('game-quiz').classList.add('hidden');
+            document.getElementById('game-result').classList.remove('hidden');
+
+            const totalScore = scenarios.length * 10;
+            document.getElementById('cert-student-name').innerText = studentName || "الطالب المتميز";
+            document.getElementById('cert-final-score').innerText = score + " / " + totalScore;
+            
+            // Set current date and random doc ID
+            const today = new Date().toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('cert-date').innerText = today;
+            document.getElementById('cert-id').innerText = Math.floor(100000 + Math.random() * 900000);
+
+            const badge = document.getElementById('result-badge');
+            const ratingEl = document.getElementById('cert-rating');
+            const feedbackText = document.getElementById('result-feedback-text');
+
+            if (score >= 80) {
+                badge.className = "w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl shadow-xl bg-amber-500/20 text-amber-400 border-2 border-amber-500";
+                ratingEl.className = "text-sm font-bold text-amber-400 mt-1";
+                ratingEl.innerText = "خبير تقويم تربوي 🌟";
+                feedbackText.innerText = `أظهرت يا ${studentName} فهمًا متعمقًا ورؤية تربوية متقدمة في الموازنة بين الاختبارات الرقمية والورقية والتعامل الكفء مع السيناريوهات المختلفة.`;
+                
+                // Launch Confetti
+                confetti({
+                    particleCount: 120,
+                    spread: 80,
+                    origin: { y: 0.6 }
+                });
+            } else if (score >= 50) {
+                badge.className = "w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl shadow-xl bg-blue-500/20 text-blue-400 border-2 border-blue-500";
+                ratingEl.className = "text-sm font-bold text-blue-400 mt-1";
+                ratingEl.innerText = "جيد جداً 👍";
+                feedbackText.innerText = `أداء رائع يا ${studentName}! تدرك الفروق الجوهرية، ومزيد من الاطلاع على مصفوفة المقارنة سيعزز مهاراتك في الحالات الاستثنائية.`;
+            } else {
+                badge.className = "w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl shadow-xl bg-slate-700 text-slate-300 border-2 border-slate-600";
+                ratingEl.className = "text-sm font-bold text-slate-400 mt-1";
+                ratingEl.innerText = "مشارك نشط 📚";
+                feedbackText.innerText = `محاولة جيدة يا ${studentName}. ندعوك لاستكشاف مصفوفة المقارنة لمعرفة تفاصيل الدعم الفني، الاستدامة، والبنية التحتية.`;
+            }
+        }
+
+        function printCertificate() {
+            window.print();
+        }
+
+        /* ================= COMPARISON MATRIX FUNCTIONS ================= */
+        let activeCriterionId = "cost";
+
+        function initComparisonMatrix() {
+            const container = document.getElementById('criteria-selector');
+            container.innerHTML = "";
+
+            criteriaData.forEach((item, index) => {
+                const btn = document.createElement('button');
+                btn.id = `crit-btn-${item.id}`;
+                btn.onclick = () => selectCriterion(item.id);
+                
+                const isSelected = item.id === activeCriterionId;
+                btn.className = isSelected
+                    ? "px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 transition-all"
+                    : "px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 bg-slate-800/80 text-slate-400 hover:text-white border border-slate-700/60 transition-all";
+
+                btn.innerHTML = `<i class="fa-solid ${item.icon}"></i> <span>${item.name}</span>`;
+                container.appendChild(btn);
+            });
+
+            renderCriterionDetails(activeCriterionId);
+            renderSummaryTable();
+        }
+
+        function selectCriterion(id) {
+            activeCriterionId = id;
+
+            // Update tab styles
+            criteriaData.forEach(item => {
+                const btn = document.getElementById(`crit-btn-${item.id}`);
+                if (item.id === id) {
+                    btn.className = "px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 transition-all";
+                } else {
+                    btn.className = "px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 bg-slate-800/80 text-slate-400 hover:text-white border border-slate-700/60 transition-all";
+                }
+            });
+
+            renderCriterionDetails(id);
+        }
+
+        function renderCriterionDetails(id) {
+            const data = criteriaData.find(c => c.id === id);
+            if (!data) return;
+
+            document.getElementById('compare-criterion-tag-1').innerText = data.name;
+            document.getElementById('compare-criterion-tag-2').innerText = data.name;
+
+            // Electronic Render
+            const elecContainer = document.getElementById('elec-detail-content');
+            elecContainer.innerHTML = `
+                <div class="flex items-center justify-between mb-2">
+                    <h4 class="font-bold text-slate-100 text-base">${data.electronic.title}</h4>
+                    <span class="text-xs bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded border border-blue-500/30">${data.electronic.badge}</span>
+                </div>
+                <ul class="space-y-2 text-sm text-slate-300">
+                    ${data.electronic.points.map(pt => `
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-check text-blue-400 mt-1 shrink-0"></i>
+                            <span>${pt}</span>
+                        </li>
+                    `).join('')}
+                </ul>
+            `;
+
+            // Paper Render
+            const paperContainer = document.getElementById('paper-detail-content');
+            paperContainer.innerHTML = `
+                <div class="flex items-center justify-between mb-2">
+                    <h4 class="font-bold text-slate-100 text-base">${data.paper.title}</h4>
+                    <span class="text-xs bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded border border-amber-500/30">${data.paper.badge}</span>
+                </div>
+                <ul class="space-y-2 text-sm text-slate-300">
+                    ${data.paper.points.map(pt => `
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-check text-amber-400 mt-1 shrink-0"></i>
+                            <span>${pt}</span>
+                        </li>
+                    `).join('')}
+                </ul>
+            `;
+        }
+
+        function renderSummaryTable() {
+            const tableBody = document.getElementById('summary-table-body');
+            tableBody.innerHTML = criteriaData.map(item => `
+                <tr class="hover:bg-slate-800/40 transition-colors">
+                    <td class="p-3 font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid ${item.icon} text-indigo-400"></i>
+                        <span>${item.name}</span>
+                    </td>
+                    <td class="p-3 text-slate-300">${item.electronic.badge}</td>
+                    <td class="p-3 text-slate-300">${item.paper.badge}</td>
+                    <td class="p-3 font-semibold text-emerald-400">${item.best}</td>
+                </tr>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
